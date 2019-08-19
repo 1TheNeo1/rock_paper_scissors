@@ -1,59 +1,162 @@
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="https://kit.fontawesome.com/8d4c5655e7.js"></script>
+    <title>Rock Paper cissors</title>
+</head>
+<style>
+    *{
+        margin:0;
+        padding: 0;
+        font-size: 3rem;
+        
+    }
+    .container{
+        margin-top: 5%;
+        height: 50vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        
+    }
+    .btn{
+       
+        border-color: rgb(255,205,148);
+        padding: 0.5rem;
+        margin: 2rem;
+        color: rgb(255,205,148);
+        background-color: rgba(255, 255, 255, 0.904);
+        transition: 0.07s;
+    }
+    .btn:hover{
+        transform: scale(1.1);
+        cursor: pointer;
+        color: rgba(255, 255, 255, 0.904);
+        background-color: rgb(255,205,148);
+    }
+    .result {
+        margin-left: 15%;
+        width: 70%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    p{
+        font-size: 1.2rem;
+        color:#2d2a32;
+    }
+    .player,
+    .computer {
+        display: flex;
+        flex-direction: column;
+        align-items: center
+    }
+    span{
+        margin-top: 5%;
+        border: 1px dashed #de9151;
+        width: 3rem;
+        height: 3rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+</style>
+<body>
+        <div class="result">
+                <div class="player">
+                    <p id='name'></p>
+                    <span><p id="player-score">0</p></span>
+                </div>
+                <div class="computer">
+                    <p>computer</p>
+                    <span><p id="computer-score">0</p></span>
+                </div>
+            </div>
+    <div class="container">
+       
+        <button class="btn" id="rock"><i class="fas fa-hand-rock"></i></button>
+        <button class="btn" id="paper"><i class="fas fa-hand-paper"></i></button>
+        <button class="btn" id="scissors"><i class="fas fa-hand-scissors"></i></button>
+    </div>
+</body>
+</html>
 <script>
+    const shapes = document.querySelectorAll(".btn");
+    const playerScore = document.querySelector('#player-score');
+    const computerScore = document.querySelector('#computer-score');
+    const name = document.querySelector('#name');
+
+    //Choosing name for player -> Player is default
+    let choseName = "";
+    while(true){
+        choseName = prompt('Chose your Name.Name can\'t be longer than 10 chars or lower than 3', 'Player');
+        if(choseName.length <= 10 && choseName.length >=3 ){
+            name.textContent = choseName;
+            break;
+        }
+    }
+    
+    //Computer is randomly deciding his shape
     const play_array = ['rock', 'paper', 'scissors'];
     function computerPlay(){
         let randNumber = Math.floor(Math.random() * 3);
-        return play_array[randNumber]
+        return play_array[randNumber];
     }
-    function playerPlay(){
-        let playerInput = prompt("Choose rock, paper, or scissors");
-        for(let i=0; i< play_array.length; i++){
-            if (playerInput.toLowerCase() == play_array[i]) {
-                return playerInput.toLowerCase();
-            }
-        }
-    }
+    //i have put points as global var so that all functions can accsess it.
+        let points = [0,0];
+        let playerInput = "";
+        //i have used forEach since it requires much less code that if i had to make id for each button
+        shapes.forEach((shape )=> {
+        shape.addEventListener('click', () => {
+            playerInput = shape.getAttribute('id');
+            let result = playRound(playerInput);//takes array of inout 0-> player points 1-> comp
+            playerScore.textContent= result[0].toString();
+            computerScore.textContent= result[1].toString();  
+            game(result); //Checking if the game is over        
+        });
+    });
+    /*
+        this part of the code decides who is weaker i put them like this in a way where the stronger shape is 
+        value, and weaker is name
+    */
     let movements = {
         "rock":"paper",
         "paper": "scissors",
         "scissors":"rock",
     }
-    function playRound(){
+  
+    function playRound(playerInput){
         const computerSelection = computerPlay();
-        const playerSelection = playerPlay();
+        console.log(`computer chosed ${computerSelection}`);
+        let playerSelection = playerInput;
         if (computerSelection == playerSelection){
-            return "draw";
+             points[0]+=0;
         }
         if (movements[computerSelection] == playerSelection){
-            return 'player';
+             points[0]++;
         }
         else if (movements[playerSelection] == computerSelection){
-            return 'comp';
+             points[1]++;
         }
+        return points;
     }
-    
-    function game(playRound){
-        let i =0;
-        let compCounter = 0;
-        let playerCounter = 0;
-        while (i < 5) {
-            let gameRound = playRound();
-            console.log(gameRound);
-            if (gameRound == "player"){
-                playerCounter++;
+    /* 
+        this part of the code decides wether someone itted 5  points or not 
+    */
+    function game(result){
+        if(result[0] == 5){
+                points=[0,0];
+                playerScore.textContent= '0';
+                computerScore.textContent = '0';
+                alert('You Won');
+            }else if (result[1] == 5){
+                points=[0,0];
+                playerScore.textContent= '0';
+                computerScore.textContent = '0';
+                alert('You Lose');
             }
-            else if (gameRound == "comp"){
-                compCounter++;
-            }
-            i++;
-        }
-        if (playerCounter > compCounter){
-            return "You Won";
-        }else if (compCounter > playerCounter) {
-            return "You Lose";
-        }else {
-            return "Draw";
-        }
     }
-    console.log(game(playRound));
 </script>
